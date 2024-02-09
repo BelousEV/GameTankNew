@@ -2,9 +2,12 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mygdx.game.units.BotTank;
 import com.mygdx.game.units.PlayerTank;
 import com.mygdx.game.units.Tank;
 
@@ -18,18 +21,24 @@ public class GameTanks extends ApplicationAdapter {
 	private BotEmitter botEmitter;
 
 	private float gameTimer;
+	private static final boolean FIRENDLY_FIRE = false;
 
 	public BulletEmitter getBulletEmitter() {
 		return bulletEmitter;
 	}
 
+	public PlayerTank getPlayer() {
+		return player;
+	}
+
 	@Override
 	public void create () { //метод отвечает за запуск приложения с начальной подготовкой
+		TextureAtlas atlas = new TextureAtlas("game.pack");
 		batch = new SpriteBatch();
-		map = new Map();
-		player = new PlayerTank(this);
-		bulletEmitter = new BulletEmitter();
-		botEmitter = new BotEmitter(this);
+		map = new Map(atlas);
+		player = new PlayerTank(this, atlas);
+		bulletEmitter = new BulletEmitter(atlas);
+		botEmitter = new BotEmitter(this, atlas);
 		botEmitter.activate(MathUtils.random(0, Gdx.graphics.getWidth()), MathUtils.random(0, Gdx.graphics.getHeight()));
 
 
@@ -40,6 +49,7 @@ public class GameTanks extends ApplicationAdapter {
 		float dt = Gdx.graphics.getDeltaTime();//дельтатайм// спрашиваем у видеокарты сколько времени прошло от предыдущей отрисовки
 		update(dt);
 		ScreenUtils.clear(0, 0.6f, 0, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
 		map.render(batch);
 		player.render(batch);
@@ -50,14 +60,48 @@ public class GameTanks extends ApplicationAdapter {
 
 	public void update(float dt){
 		gameTimer += dt;
-		if (gameTimer > 10.0f){
+		if (gameTimer > 5.0f){
 			gameTimer = 0.0f;
 			botEmitter.activate(MathUtils.random(0, Gdx.graphics.getWidth()), MathUtils.random(0, Gdx.graphics.getHeight()));
 		}
 		player.update(dt);
 		botEmitter.update(dt);
 		bulletEmitter.update(dt); //bulletEmitter сам посмотри и заапдейть
+		checkCollisions();
 
+	}
+
+	public void checkCollisions() {
+		for (int i = 0; i < bulletEmitter.getBullets().length; i++) {
+			Bullet bullet = bulletEmitter.getBullets()[i];
+			if (bullet.isActive()) {
+				for (int j = 0; j < botEmitter.getBots().length; j++) {
+					BotTank bot = botEmitter.getBots()[j];
+					if (bot.isActive()) {
+						if (checkBulletAndTank(bot, bullet) && bot.getCircle().contains(bullet.getPosition())) {
+							bullet.deactivate();
+							bot.takeDamage(bullet.getDamage());
+							break;
+						}
+					}
+				}
+
+				if (checkBulletAndTank(player, bullet) && player.getCircle().contains(bullet.getPosition())) {
+					bullet.deactivate();
+					player.takeDamage(bullet.getDamage());
+				}
+
+				map.checkWallAndBulletsCollision(bullet);
+			}
+		}
+	}
+
+	public boolean checkBulletAndTank(Tank tank, Bullet bullet) {
+		if (!FIRENDLY_FIRE) {
+			return tank.getOwnerType() != bullet.getOwner().getOwnerType();
+		} else {
+			return tank != bullet.getOwner();
+		}
 	}
 	@Override
 	public void dispose () { //метод освобождения ресурсов
