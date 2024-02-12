@@ -41,7 +41,8 @@ public class Bullet {
 
 
 
-    public void activate (float x, float y, float vx, float vy, int damage){
+    public void activate(Tank owner, float x, float y, float vx, float vy, int damage) {
+        this.owner = owner;
         this.active = true;
         this.position.set(x, y);
         this.velocity.set(vx, vy);
