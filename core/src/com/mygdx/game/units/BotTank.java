@@ -38,13 +38,14 @@ public class BotTank extends Tank {
         this.hpMax = 3;
         this.hp = this.hpMax; //здоровье максимально (аптечку съели сразу)
         this.aiTimerTo = 3.0f; //ты должен изменить свое действие через 3 сек.
+        this.pursuitRadius = 300.0f;
         this.preferredDirection = Direction.UP;
         this.circle = new Circle(position.x, position.y, (width + height) / 2);
     }
 
 
     public void activate (float x, float y) {
-        hpMax = 4;
+        hpMax = 3;
         hp = this.hpMax;
         preferredDirection = Direction.values()[MathUtils.random(0, Direction.values().length - 1)];
         angle = preferredDirection.getAngle();
