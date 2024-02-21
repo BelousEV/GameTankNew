@@ -15,7 +15,7 @@ public class PlayerTank extends Tank {
 
     public PlayerTank(GameTanks game, TextureAtlas atlas) {
         super(game);
-        this.ownerType = TankOwner.PLAYER;
+        this.ownerType = TankOwner.PLAYER; //играет человек
         this.weapon = new Weapon(atlas);
         this.texture = atlas.findRegion("playerTankBase");
         this.textureHp = atlas.findRegion("bar");

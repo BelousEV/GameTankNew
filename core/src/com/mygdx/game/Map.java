@@ -13,13 +13,14 @@ public class Map {
     public static final int CELL_SIZE = 20;
 
     private TextureRegion grassTexture;
-    private TextureRegion wallTexture;
-    private int obstacles[][];
+    private TextureRegion wallTexture; //стена
+    private int obstacles[][]; //препятствие
 
     public Map(TextureAtlas atlas) {
         this.grassTexture = atlas.findRegion("grass40");
         this.wallTexture = atlas.findRegion("block");
         this.obstacles = new int[SIZE_X][SIZE_Y];
+
         for (int i = 0; i < SIZE_X; i++) {
             for (int j = 0; j < 3; j++) {
                 this.obstacles[i][SIZE_Y - 1 - j] = 5;
@@ -27,11 +28,11 @@ public class Map {
         }
     }
 
-    public void checkWallAndBulletsCollision(Bullet bullet) {
+    public void checkWallAndBulletsCollision(Bullet bullet) { // попадание в стену
         int cx = (int) (bullet.getPosition().x / CELL_SIZE);
         int cy = (int) (bullet.getPosition().y / CELL_SIZE);
 
-        if (cx >= 0 && cy >= 0 && cx < SIZE_X && cy <= SIZE_Y) {
+        if (cx >= 0 && cy >= 0 && cx < SIZE_X && cy <= SIZE_Y) { //проверяем что пуля в пределах карты
             if (obstacles[cx][cy] > 0) {
                 obstacles[cx][cy] -= bullet.getDamage();
                 bullet.deactivate();

@@ -71,36 +71,36 @@ public class GameTanks extends ApplicationAdapter {
 
 	}
 
-	public void checkCollisions() {
+	public void checkCollisions() { // наносим урон
 		for (int i = 0; i < bulletEmitter.getBullets().length; i++) {
 			Bullet bullet = bulletEmitter.getBullets()[i];
 			if (bullet.isActive()) {
 				for (int j = 0; j < botEmitter.getBots().length; j++) {
 					BotTank bot = botEmitter.getBots()[j];
 					if (bot.isActive()) {
-						if (checkBulletAndTank(bot, bullet) && bot.getCircle().contains(bullet.getPosition())) {
-							bullet.deactivate();
+						if (checkBulletAndTank(bot, bullet) && bot.getCircle().contains(bullet.getPosition())) { // если столкнулись проверяем столкновение
+							bullet.deactivate(); //если нет, то и не проверяем
 							bot.takeDamage(bullet.getDamage());
-							break;
+							break; //одна пуля попадет в один танк
 						}
 					}
 				}
 
-				if (checkBulletAndTank(player, bullet) && player.getCircle().contains(bullet.getPosition())) {
+				if (checkBulletAndTank(player, bullet) && player.getCircle().contains(bullet.getPosition())) { //проверка с плеером
 					bullet.deactivate();
 					player.takeDamage(bullet.getDamage());
 				}
 
-				map.checkWallAndBulletsCollision(bullet);
+				map.checkWallAndBulletsCollision(bullet); //проверка что пуля влетела в стену
 			}
 		}
 	}
 
-	public boolean checkBulletAndTank(Tank tank, Bullet bullet) {
-		if (!FIRENDLY_FIRE) {
-			return tank.getOwnerType() != bullet.getOwner().getOwnerType();
-		} else {
-			return tank != bullet.getOwner();
+	public boolean checkBulletAndTank(Tank tank, Bullet bullet) { //настройка дружественного огня
+		if (!FIRENDLY_FIRE) { //выключен, то
+			return tank.getOwnerType() != bullet.getOwner().getOwnerType(); //стреляем только по танку ппротиволожного типа
+		} else { //включен
+			return tank != bullet.getOwner(); //танк не должен попадать по любому танку (владелец пули не должен совпадать с танком тогда попадаем
 		}
 	}
 	@Override

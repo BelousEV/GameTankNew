@@ -7,11 +7,13 @@ import com.mygdx.game.units.Tank;
 
 public class Bullet {
 
-    private Tank owner;
+    private Tank owner; //владелец (пули)
     private Vector2 position; //позиция х у
     private Vector2 velocity; // скорость (без  ускорения)
     private float speed;
     private boolean active; // может быть включена или выключена
+    private float currentTame; //время жизни пули
+    private float maxTame; //
     private  int damage; //урон
 
 
@@ -41,12 +43,14 @@ public class Bullet {
 
 
 
-    public void activate(Tank owner, float x, float y, float vx, float vy, int damage) {
+    public void activate(Tank owner, float x, float y, float vx, float vy, int damage, float maxTame) {
         this.owner = owner;
         this.active = true;
         this.position.set(x, y);
         this.velocity.set(vx, vy);
         this.damage = damage;
+        this.maxTame = maxTame;
+        this.currentTame = 0.0f;
     }
 
     public void deactivate(){
@@ -55,6 +59,10 @@ public class Bullet {
 
     public void update (float dt){
         position.mulAdd(velocity, dt); //складываем два вектора
+        currentTame += dt;
+        if (currentTame >= maxTame){
+            deactivate();
+        }
         if (position.x < 0.0f || position.x > 1280f || position.y < 0.0f || position.y > 720.f) {
             deactivate();
         }
