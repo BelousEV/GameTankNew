@@ -25,10 +25,10 @@ public class BulletEmitter {
         }
     }
 
-    public void activate(Tank owner, float x, float y, float vx, float vy, int damage) {
+    public void activate(Tank owner, float x, float y, float vx, float vy, int damage, float maxTame) {
         for (int i = 0; i < bullets.length; i++) {
             if (!bullets[i].isActive()) { //если пуля неактивна активируем ее с координатами)
-                bullets[i].activate(owner, x, y, vx, vy, damage);
+                bullets[i].activate(owner, x, y, vx, vy, damage, maxTame );
                 break;
             }
         }

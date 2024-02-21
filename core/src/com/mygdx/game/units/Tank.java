@@ -15,7 +15,7 @@ import com.mygdx.game.Weapon;
 public abstract class Tank {
 
     GameTanks game;
-    TankOwner ownerType;
+    TankOwner ownerType; // кто управляет бот или игрок?
     Weapon weapon;
     TextureRegion texture;
 
@@ -104,7 +104,8 @@ public abstract class Tank {
         if (fireTimer >= weapon.getFirePeriod()) {
             fireTimer = 0.0f;
             float angleRad = (float) Math.toRadians(turretAngle); //приводим к радиану
-            game.getBulletEmitter().activate(this, position.x, position.y, 320.0f * (float) Math.cos(angleRad), 320.0f * (float) Math.sin(angleRad), weapon.getDamage()); // хотим активировать и указываем координаты
+
+            game.getBulletEmitter().activate(this, position.x, position.y, weapon.getProjectileSpeed() * (float) Math.cos(angleRad), weapon.getProjectileSpeed() * (float) Math.sin(angleRad), weapon.getDamage(), weapon.getProjectileLifeTime()); // хотим активировать и указываем координаты
         }
     }
 }

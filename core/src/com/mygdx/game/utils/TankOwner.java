@@ -1,5 +1,5 @@
 package com.mygdx.game.utils;
 
-public enum TankOwner {
+public enum TankOwner { //кто управляет танком
     PLAYER, AI
 }

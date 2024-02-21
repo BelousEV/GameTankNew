@@ -18,7 +18,7 @@ public class BotTank extends Tank {
     float aiTimer; //таймер для действия
     float aiTimerTo; //будльник для смены действия
     boolean active;
-    float pursuitRadius;
+    float pursuitRadius; //радиус когда бот реагирует на персонажа
 
 
     public boolean isActive() {
@@ -27,7 +27,7 @@ public class BotTank extends Tank {
 
     public BotTank(GameTanks game, TextureAtlas atlas) {
         super(game);
-        this.ownerType = TankOwner.AI;
+        this.ownerType = TankOwner.AI; //играет бот
         this.weapon = new Weapon(atlas);
         this.texture = atlas.findRegion("botTankBase");
         this.textureHp = atlas.findRegion("bar");
@@ -68,7 +68,7 @@ public class BotTank extends Tank {
         }
         position.add(speed * preferredDirection.getVx() * dt, speed * preferredDirection.getVy() * dt);
         float dst = this.position.dst(game.getPlayer().getPosition());
-        if (dst < pursuitRadius) {
+        if (dst < pursuitRadius) { //посчитать расстояние до плеера
             rotateTurretToPoint(game.getPlayer().getPosition().x, game.getPlayer().getPosition().y, dt);
             fire(dt);
         }
