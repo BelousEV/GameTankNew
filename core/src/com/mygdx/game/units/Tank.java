@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.GameTanks;
 
+import com.mygdx.game.utils.Direction;
 import com.mygdx.game.utils.TankOwner;
 import com.mygdx.game.utils.Utils;
 import com.mygdx.game.Weapon;
@@ -22,6 +23,7 @@ public abstract class Tank {
     TextureRegion textureHp;
     Vector2 position;
     Circle circle;
+    Vector2 tmp; //просто для вычислений
     float speed;
     float angle; //есть у танка угол
     float turretAngle; //угол туреля-пушки
@@ -47,7 +49,7 @@ public abstract class Tank {
     }
     public Tank(GameTanks game) {
         this.game = game;
-
+        this.tmp = new Vector2(0.0f, 0.0f);
 
     }
 
@@ -91,6 +93,16 @@ public abstract class Tank {
         circle.setPosition(position);
     }
 
+
+    public void move (Direction direction, float dt) {
+        tmp.set (position);
+        tmp.add (speed * direction.getVx() * dt, speed * direction.getVy()*dt );
+        if (game.getMap().isAreaClear(tmp.x, tmp.y, width/2)) {
+            angle = direction.getAngle();
+            position.set(tmp);
+        }
+    }
+
     public void rotateTurretToPoint (float pointX, float pointY, float dt ) {
         float angleTo = Utils.getAngle(position.x, position.y, pointX, pointY); //метод поворота турели или бота
         turretAngle = Utils.makeRotation(turretAngle, angleTo, 270.f, dt);
@@ -100,7 +112,7 @@ public abstract class Tank {
 
 
 
-    public void fire(float dt) {
+    public void fire() {
         if (fireTimer >= weapon.getFirePeriod()) {
             fireTimer = 0.0f;
             float angleRad = (float) Math.toRadians(turretAngle); //приводим к радиану

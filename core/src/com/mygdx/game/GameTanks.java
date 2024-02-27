@@ -23,6 +23,10 @@ public class GameTanks extends ApplicationAdapter {
 	private float gameTimer;
 	private static final boolean FIRENDLY_FIRE = false;
 
+	public Map getMap() {
+		return map;
+	}
+
 	public BulletEmitter getBulletEmitter() {
 		return bulletEmitter;
 	}

@@ -66,11 +66,11 @@ public class BotTank extends Tank {
             preferredDirection = Direction.values()[MathUtils.random(0, Direction.values().length - 1)];
             angle = preferredDirection.getAngle();
         }
-        position.add(speed * preferredDirection.getVx() * dt, speed * preferredDirection.getVy() * dt);
+        move(preferredDirection, dt);
         float dst = this.position.dst(game.getPlayer().getPosition());
         if (dst < pursuitRadius) { //посчитать расстояние до плеера
             rotateTurretToPoint(game.getPlayer().getPosition().x, game.getPlayer().getPosition().y, dt);
-            fire(dt);
+            fire();
         }
         super.update(dt);
     }
