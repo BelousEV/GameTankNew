@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.GameTanks;
 import com.mygdx.game.Weapon;
+import com.mygdx.game.utils.Direction;
 import com.mygdx.game.utils.TankOwner;
 
 public class PlayerTank extends Tank {
@@ -29,11 +30,11 @@ public class PlayerTank extends Tank {
         this.lifes = 5;
     }
 
-        @Override
-        public void destroy() {
-            lifes--;
-            hp = hpMax;
-        }
+    @Override
+    public void destroy() {
+        lifes--;
+        hp = hpMax;
+    }
 
     public void update(float dt) {
         checkMovent(dt);
@@ -43,7 +44,7 @@ public class PlayerTank extends Tank {
         rotateTurretToPoint(mx, my, dt);
 
         if (Gdx.input.isTouched()) {
-            fire(dt);
+            fire();
         }
 
         super.update(dt);
@@ -51,24 +52,16 @@ public class PlayerTank extends Tank {
 
     public void checkMovent(float dt) { //метод отвечает за движения
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            position.x -= speed * dt;
-            angle = 180.f;
-            return;
+            move(Direction.LEFT, dt);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            position.x += speed * dt;
-            angle = 0;
-            return;
+            move(Direction.RIGHT,dt);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            position.y += speed * dt;
-            angle = 90.0f;
-            return;
+            move(Direction.UP, dt);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            position.y -= speed * dt;
-            angle = 270.0f;
-            return;
+            move(Direction.DOWN, dt);
         }
     }
 
