@@ -70,7 +70,7 @@ public class Map {
                 int cx = (int) i / 4;
                 int cy = (int) j / 4;
                 if (cx % 2 == 0 && cy % 2 == 0) {
-                    if (MathUtils.random () < 0.8f ) {
+                    if (MathUtils.random() < 0.8f) {
                         cells[i][j].changeType(WallType.HARD);
                     } else {
                         cells[i][j].changeType(WallType.SOFT);
@@ -81,6 +81,11 @@ public class Map {
         for (int i = 0; i < SIZE_X; i++) { //снизу и сверху непробиваемые стены
             cells[i][0].changeType(WallType.INDESTRUCTIBLE);
             cells[i][SIZE_Y - 1].changeType(WallType.INDESTRUCTIBLE);
+
+        }
+        for (int i = 0; i < SIZE_Y; i++) { //снизу и сверху непробиваемые стены
+            cells[0][i].changeType(WallType.INDESTRUCTIBLE);
+            cells[SIZE_X - 1][i].changeType(WallType.INDESTRUCTIBLE);
 
 
         }

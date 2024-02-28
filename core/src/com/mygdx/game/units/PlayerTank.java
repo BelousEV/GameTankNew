@@ -3,6 +3,8 @@ package com.mygdx.game.units;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
@@ -12,6 +14,7 @@ import com.mygdx.game.utils.Direction;
 import com.mygdx.game.utils.TankOwner;
 
 public class PlayerTank extends Tank {
+    int score;
     int lifes;
 
     public PlayerTank(GameTanks game, TextureAtlas atlas) {
@@ -28,6 +31,10 @@ public class PlayerTank extends Tank {
         this.hp = this.hpMax;
         this.circle = new Circle(position.x, position.y, (width + height) / 2);
         this.lifes = 5;
+    }
+
+    public void addScore (int amount){
+        score +=amount;
     }
 
     @Override
@@ -48,6 +55,12 @@ public class PlayerTank extends Tank {
         }
 
         super.update(dt);
+    }
+
+
+    public void renderHUD (SpriteBatch batch, BitmapFont font24){
+        font24.draw(batch, "Score: " + score + "\nLifes" + lifes, 20, 700);
+
     }
 
     public void checkMovent(float dt) { //метод отвечает за движения
