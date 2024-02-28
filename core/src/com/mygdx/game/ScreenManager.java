@@ -5,6 +5,7 @@ public class ScreenManager {
     public static ScreenManager getInstance() {return ourInstance;}
     private ScreenManager (){
 
+
     }
 
 }
