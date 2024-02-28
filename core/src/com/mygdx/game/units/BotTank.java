@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 import com.badlogic.gdx.math.Vector3;
+import com.mygdx.game.GameScreen;
 import com.mygdx.game.GameTanks;
 import com.mygdx.game.Weapon;
 import com.mygdx.game.utils.Direction;
@@ -29,7 +30,7 @@ public class BotTank extends Tank {
         return active;
     }
 
-    public BotTank(GameTanks game, TextureAtlas atlas) {
+    public BotTank(GameScreen game, TextureAtlas atlas) {
         super(game);
         this.ownerType = TankOwner.AI; //играет бот
         this.weapon = new Weapon(atlas);
@@ -72,9 +73,9 @@ public class BotTank extends Tank {
             angle = preferredDirection.getAngle();
         }
         move(preferredDirection, dt);
-        float dst = this.position.dst(game.getPlayer().getPosition());
+        float dst = this.position.dst(gameScreen.getPlayer().getPosition());
         if (dst < pursuitRadius) { //посчитать расстояние до плеера
-            rotateTurretToPoint(game.getPlayer().getPosition().x, game.getPlayer().getPosition().y, dt);
+            rotateTurretToPoint(gameScreen.getPlayer().getPosition().x, gameScreen.getPlayer().getPosition().y, dt);
             fire();
         }
         if (Math.abs (position.x - lastPosition.x) < 0.5f && Math.abs (position.y - lastPosition.y) < 0.5f) {  //если бот залип на 0,3 сек сбрасываем таймер и другое направление выбирает
