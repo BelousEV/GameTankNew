@@ -25,7 +25,7 @@ public class PlayerTank extends Tank {
         this.width = texture.getRegionWidth();
         this.height = texture.getRegionHeight();
         this.hpMax = 10;
-        this.hp = this.hpMax - 2;
+        this.hp = this.hpMax;
         this.circle = new Circle(position.x, position.y, (width + height) / 2);
         this.lifes = 5;
     }
