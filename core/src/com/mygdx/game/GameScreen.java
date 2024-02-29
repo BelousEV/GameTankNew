@@ -173,7 +173,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) { //когда отмасштабировали
-
+        ScreenManager.getInstance().resize(width, height);
     }
 
     @Override

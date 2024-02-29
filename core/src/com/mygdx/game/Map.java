@@ -13,9 +13,9 @@ public class Map {
         SOFT(1, 3, true),
         INDESTRUCTIBLE(2, 1, false), //(неразрушимый)
         NONE(0, 0, false);
-        int index;
-        int maxHP;
-        boolean destructible;
+        int index; //тип стены, индекс отвечает за 1, 2 или строка
+        int maxHP; //сколько раз ударить в стену чтобы ее уничтожить
+        boolean destructible; //тип стены - уничтожаемая или нет
 
 
         WallType(int index, int maxHP, boolean destructible) {
