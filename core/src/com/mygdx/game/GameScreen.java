@@ -15,7 +15,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mygdx.game.units.BotTank;
 import com.mygdx.game.units.PlayerTank;
+import com.mygdx.game.units.Tank;
 
 public class GameScreen implements Screen {
     private SpriteBatch batch;
@@ -46,7 +48,8 @@ public class GameScreen implements Screen {
         return player;
     }
 
-    public GameScreen (SpriteBatch batch) {
+    public GameScreen(SpriteBatch batch) {
+        this.batch = batch;
 
     }
 
@@ -54,7 +57,6 @@ public class GameScreen implements Screen {
     public void show() { //когда экран показали
         TextureAtlas atlas = new TextureAtlas("game.pack");
         font24 = new BitmapFont(Gdx.files.internal("font24.fnt"));
-        batch = new SpriteBatch();
         map = new Map(atlas);
         player = new PlayerTank(this, atlas);
         bulletEmitter = new BulletEmitter(atlas);
@@ -87,10 +89,10 @@ public class GameScreen implements Screen {
         });
 
         pauseButton.setPosition(0, 40); //расположение кнопки
-        exitButton.setPosition(0,0);
+        exitButton.setPosition(0, 0);
         group.addActor(pauseButton);
         group.addActor(exitButton);
-        group.setPosition(1100,640);
+        group.setPosition(1100, 640);
         stage.addActor(group);  //выводим на экран кнопку
         Gdx.input.setInputProcessor(stage);
     }
@@ -135,6 +137,40 @@ public class GameScreen implements Screen {
 
     }
 
+
+    public void checkCollisions() { // наносим урон
+        for (int i = 0; i < bulletEmitter.getBullets().length; i++) {
+            Bullet bullet = bulletEmitter.getBullets()[i];
+            if (bullet.isActive()) {
+                for (int j = 0; j < botEmitter.getBots().length; j++) {
+                    BotTank bot = botEmitter.getBots()[j];
+                    if (bot.isActive()) {
+                        if (checkBulletAndTank(bot, bullet) && bot.getCircle().contains(bullet.getPosition())) { // если столкнулись проверяем столкновение
+                            bullet.deactivate(); //если нет, то и не проверяем
+                            bot.takeDamage(bullet.getDamage());
+                            break; //одна пуля попадет в один танк
+                        }
+                    }
+                }
+
+                if (checkBulletAndTank(player, bullet) && player.getCircle().contains(bullet.getPosition())) { //проверка с плеером
+                    bullet.deactivate();
+                    player.takeDamage(bullet.getDamage());
+                }
+
+                map.checkWallAndBulletsCollision(bullet); //проверка что пуля влетела в стену
+            }
+        }
+    }
+
+    public boolean checkBulletAndTank(Tank tank, Bullet bullet) { //настройка дружественного огня
+        if (!FIRENDLY_FIRE) { //выключен, то
+            return tank.getOwnerType() != bullet.getOwner().getOwnerType(); //стреляем только по танку ппротиволожного типа
+        } else { //включен
+            return tank != bullet.getOwner(); //танк не должен попадать по любому танку (владелец пули не должен совпадать с танком тогда попадаем
+        }
+    }
+
     @Override
     public void resize(int width, int height) { //когда отмасштабировали
 
@@ -159,4 +195,5 @@ public class GameScreen implements Screen {
     public void dispose() {
 
     }
+
 }
