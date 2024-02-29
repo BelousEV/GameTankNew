@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.GameScreen;
 import com.mygdx.game.GameTanks;
 
 import com.mygdx.game.utils.Direction;
@@ -15,7 +16,7 @@ import com.mygdx.game.Weapon;
 
 public abstract class Tank {
 
-    GameTanks game;
+    GameScreen gameScreen;
     TankOwner ownerType; // кто управляет бот или игрок?
     Weapon weapon;
     TextureRegion texture;
@@ -47,8 +48,8 @@ public abstract class Tank {
     public Circle getCircle() {
         return circle;
     }
-    public Tank(GameTanks game) {
-        this.game = game;
+    public Tank(GameScreen gameScreen) {
+        this.gameScreen = gameScreen;
         this.tmp = new Vector2(0.0f, 0.0f);
 
     }
@@ -97,7 +98,7 @@ public abstract class Tank {
     public void move (Direction direction, float dt) {
         tmp.set (position);
         tmp.add (speed * direction.getVx() * dt, speed * direction.getVy()*dt );
-        if (game.getMap().isAreaClear(tmp.x, tmp.y, width/2)) {
+        if (gameScreen.getMap().isAreaClear(tmp.x, tmp.y, width/2)) {
             angle = direction.getAngle();
             position.set(tmp);
         }
@@ -117,7 +118,7 @@ public abstract class Tank {
             fireTimer = 0.0f;
             float angleRad = (float) Math.toRadians(turretAngle); //приводим к радиану
 
-            game.getBulletEmitter().activate(this, position.x, position.y, weapon.getProjectileSpeed() * (float) Math.cos(angleRad), weapon.getProjectileSpeed() * (float) Math.sin(angleRad), weapon.getDamage(), weapon.getProjectileLifeTime()); // хотим активировать и указываем координаты
+            gameScreen.getBulletEmitter().activate(this, position.x, position.y, weapon.getProjectileSpeed() * (float) Math.cos(angleRad), weapon.getProjectileSpeed() * (float) Math.sin(angleRad), weapon.getDamage(), weapon.getProjectileLifeTime()); // хотим активировать и указываем координаты
         }
     }
 }
