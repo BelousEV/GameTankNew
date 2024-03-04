@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.GameScreen;
 import com.mygdx.game.GameTanks;
+import com.mygdx.game.ScreenManager;
 import com.mygdx.game.Weapon;
 import com.mygdx.game.utils.Direction;
 import com.mygdx.game.utils.TankOwner;
@@ -46,10 +47,13 @@ public class PlayerTank extends Tank {
 
     public void update(float dt) {
         checkMovent(dt);
-        float mx = Gdx.input.getX();
+        float mx = Gdx.input.getX(); //расчет координат
         float my = Gdx.graphics.getHeight() - Gdx.input.getY();
 
-        rotateTurretToPoint(mx, my, dt);
+        tmp.set (Gdx.input.getX(), Gdx.input.getY());
+        ScreenManager.getInstance().getViewport().unproject(tmp);
+
+        rotateTurretToPoint(tmp.x, tmp.y, dt);
 
         if (Gdx.input.isTouched()) {
             fire();

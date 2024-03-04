@@ -3,6 +3,7 @@ package com.mygdx.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -101,8 +102,14 @@ public class GameScreen implements Screen {
     public void render(float delta) {
         update(delta);//дельтатайм// спрашиваем у видеокарты сколько времени прошло от предыдущей отрисовки
 
-        ScreenUtils.clear(0, 0.6f, 0, 1);
+        ScreenUtils.clear(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+//камера следит за игроком (не удалять, пригодится)
+       // ScreenManager.getInstance().getCamera().position.set(player.getPosition().x, player.getPosition().y, 0);
+        //ScreenManager.getInstance().getCamera().update();
+
+        batch.setProjectionMatrix(ScreenManager.getInstance().getCamera().combined);
         batch.begin();
         map.render(batch);
         player.render(batch);
