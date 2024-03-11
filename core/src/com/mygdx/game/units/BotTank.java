@@ -72,12 +72,30 @@ public class BotTank extends Tank {
             preferredDirection = Direction.values()[MathUtils.random(0, Direction.values().length - 1)];
             angle = preferredDirection.getAngle();
         }
+        PlayerTank preferredTarget = null;
+        if(gameScreen.getPlayer().size() == 1) { //если 1 игрок
+            preferredTarget = gameScreen.getPlayer().get(0); //в него и целимся
+        } else { //если несколько
+            float minDist = Float.MAX_VALUE; //находим ближайшего
+            for (int i = 0; i < gameScreen.getPlayer().size(); i++) { //перебираем игроков
+                PlayerTank player = gameScreen.getPlayer().get(i); //берем плеера
+                float dst = this.position.dst(player.getPosition()); //смотрим расстояние от бота до плеера
+                if (dst < minDist){ //если расст меньше, чем какое то когда либо найденнное
+                    minDist = dst; //считаем самым близким к нам
+                    preferredTarget = player; //целимся в него
+                }
+            }
+        }
+
+
+
         move(preferredDirection, dt);
-        float dst = this.position.dst(gameScreen.getPlayer().getPosition());
+        float dst = this.position.dst(preferredTarget.getPosition());
         if (dst < pursuitRadius) { //посчитать расстояние до плеера
-            rotateTurretToPoint(gameScreen.getPlayer().getPosition().x, gameScreen.getPlayer().getPosition().y, dt);
+            rotateTurretToPoint(preferredTarget.getPosition().x, preferredTarget.getPosition().y, dt);
             fire();
         }
+
         if (Math.abs (position.x - lastPosition.x) < 0.5f && Math.abs (position.y - lastPosition.y) < 0.5f) {  //если бот залип на 0,3 сек сбрасываем таймер и другое направление выбирает
             lastPosition.z += dt;
             if (lastPosition.z > 0.3f) {
