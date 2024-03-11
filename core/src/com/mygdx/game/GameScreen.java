@@ -9,9 +9,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -20,20 +22,29 @@ import com.mygdx.game.units.BotTank;
 import com.mygdx.game.units.PlayerTank;
 import com.mygdx.game.units.Tank;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
 public class GameScreen implements Screen {
     private SpriteBatch batch;
 
     private BitmapFont font24; //шрифт
     private Map map;
-    private PlayerTank player;
+    private List<PlayerTank> players;
 
     private BulletEmitter bulletEmitter;
 
     private BotEmitter botEmitter;
 
     private float gameTimer;
+    private float worldTimer;
     private Stage stage; //делаем кнопки и интерфейс
     private boolean paused;
+
+    private Vector2 mousePosition;
+    private TextureRegion cursor;
+
 
     private static final boolean FIRENDLY_FIRE = false;
 
@@ -45,8 +56,8 @@ public class GameScreen implements Screen {
         return bulletEmitter;
     }
 
-    public PlayerTank getPlayer() {
-        return player;
+    public List<PlayerTank> getPlayer() {
+        return players;
     }
 
     public GameScreen(SpriteBatch batch) {
@@ -54,22 +65,32 @@ public class GameScreen implements Screen {
 
     }
 
+    public Vector2 getMousePosition() {
+        return mousePosition;
+    }
+
     @Override
     public void show() { //когда экран показали
         TextureAtlas atlas = new TextureAtlas("game.pack");
         font24 = new BitmapFont(Gdx.files.internal("font24.fnt"));
+        cursor = new TextureRegion(atlas.findRegion("cursor"));
         map = new Map(atlas);
-        player = new PlayerTank(this, atlas);
+        players = new ArrayList<>();
+        players.add(new PlayerTank(1,this, atlas));
+        players.add(new PlayerTank(2,this, atlas));
         bulletEmitter = new BulletEmitter(atlas);
         botEmitter = new BotEmitter(this, atlas);
         gameTimer = 6.0f;
         stage = new Stage();
+        mousePosition = new Vector2();
+
+
         //делаем кнопки
         Skin skin = new Skin();
         skin.add("simpleButton", new TextureRegion(atlas.findRegion("SimpleButton")));
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle(); //создаем стиль
         textButtonStyle.up = skin.getDrawable("simpleButton"); // как выглядит книпка когда она отжата
-        textButtonStyle.font = font24;//вид декста
+        textButtonStyle.font = font24;//вид текста
 
 
         Group group = new Group();
@@ -96,6 +117,7 @@ public class GameScreen implements Screen {
         group.setPosition(1100, 640);
         stage.addActor(group);  //выводим на экран кнопку
         Gdx.input.setInputProcessor(stage);
+        // Gdx.input.setCursorCatched(true); //убираем курсор мыши
     }
 
     @Override
@@ -106,21 +128,35 @@ public class GameScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 //камера следит за игроком (не удалять, пригодится)
-       // ScreenManager.getInstance().getCamera().position.set(player.getPosition().x, player.getPosition().y, 0);
+        // ScreenManager.getInstance().getCamera().position.set(player.getPosition().x, player.getPosition().y, 0);
         //ScreenManager.getInstance().getCamera().update();
 
         batch.setProjectionMatrix(ScreenManager.getInstance().getCamera().combined);
         batch.begin();
         map.render(batch);
-        player.render(batch);
+
+        for (int i = 0; i < players.size(); i++) {
+            players.get(i).render(batch);
+        }
+
         botEmitter.render(batch);
         bulletEmitter.render(batch);
-        player.renderHUD(batch, font24);
-        stage.draw();
+
+        for (int i = 0; i < players.size(); i++) {
+            players.get(i).renderHUD(batch, font24);
+        }
+
+        batch.draw(cursor, mousePosition.x - cursor.getRegionWidth() / 2, mousePosition.y - cursor.getRegionHeight() / 2, cursor.getRegionWidth() / 2, cursor.getRegionHeight() / 2, cursor.getRegionWidth(), cursor.getRegionHeight(), 1, 1, worldTimer * 15);
+
         batch.end();
+        stage.draw();
     }
 
     public void update(float dt) {
+        mousePosition.set(Gdx.input.getX(), Gdx.input.getY());
+
+        ScreenManager.getInstance().getViewport().unproject(mousePosition); //для занесения в mousePosition мировых координат
+        worldTimer += dt;
         if (!paused) {
             gameTimer += dt;
             if (gameTimer > 5.0f) {
@@ -134,7 +170,9 @@ public class GameScreen implements Screen {
 
                 botEmitter.activate(coordX, coordY);
             }
-            player.update(dt);
+            for (int i = 0; i < players.size(); i++) {
+                players.get(i).update(dt);
+            }
             botEmitter.update(dt);
             bulletEmitter.update(dt); //bulletEmitter сам посмотри и заапдейть
             checkCollisions();
@@ -159,10 +197,12 @@ public class GameScreen implements Screen {
                         }
                     }
                 }
-
-                if (checkBulletAndTank(player, bullet) && player.getCircle().contains(bullet.getPosition())) { //проверка с плеером
-                    bullet.deactivate();
-                    player.takeDamage(bullet.getDamage());
+                for (int j = 0; j < players.size(); j++) {
+                    PlayerTank player = players.get(j);
+                    if (checkBulletAndTank(player, bullet) && player.getCircle().contains(bullet.getPosition())) { //проверка с плеером
+                        bullet.deactivate();
+                        player.takeDamage(bullet.getDamage());
+                    }
                 }
 
                 map.checkWallAndBulletsCollision(bullet); //проверка что пуля влетела в стену

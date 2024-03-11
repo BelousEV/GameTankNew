@@ -16,11 +16,13 @@ import com.mygdx.game.utils.Direction;
 import com.mygdx.game.utils.TankOwner;
 
 public class PlayerTank extends Tank {
+    int index;
     int score;
     int lifes;
 
-    public PlayerTank(GameScreen game, TextureAtlas atlas) {
+    public PlayerTank(int index,GameScreen game, TextureAtlas atlas) {
         super(game);
+        this.index = index;
         this.ownerType = TankOwner.PLAYER; //играет человек
         this.weapon = new Weapon(atlas);
         this.texture = atlas.findRegion("playerTankBase");
@@ -47,13 +49,10 @@ public class PlayerTank extends Tank {
 
     public void update(float dt) {
         checkMovent(dt);
-        float mx = Gdx.input.getX(); //расчет координат
-        float my = Gdx.graphics.getHeight() - Gdx.input.getY();
 
-        tmp.set (Gdx.input.getX(), Gdx.input.getY());
         ScreenManager.getInstance().getViewport().unproject(tmp);
 
-        rotateTurretToPoint(tmp.x, tmp.y, dt);
+        rotateTurretToPoint(gameScreen.getMousePosition().x, gameScreen.getMousePosition().y, dt);
 
         if (Gdx.input.isTouched()) {
             fire();

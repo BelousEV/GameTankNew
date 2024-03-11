@@ -9,19 +9,24 @@ import com.badlogic.gdx.math.MathUtils;
 public class Map {
 
     public enum WallType { //описание типов стен
-        HARD(0, 5, true),
-        SOFT(1, 3, true),
-        INDESTRUCTIBLE(2, 1, false), //(неразрушимый)
-        NONE(0, 0, false);
+        HARD(0, 5, true, false, false),
+        SOFT(1, 3, true, false, false),
+        INDESTRUCTIBLE(2, 1, false, false, false), //(неразрушимый)
+        WATER (3, 1 , false, false, true),
+        NONE(0, 0, false, true, true);
         int index; //тип стены, индекс отвечает за 1, 2 или строка
         int maxHP; //сколько раз ударить в стену чтобы ее уничтожить
+        boolean unitPassable;
+        boolean projectilePassable;
         boolean destructible; //тип стены - уничтожаемая или нет
 
 
-        WallType(int index, int maxHP, boolean destructible) {
+        WallType(int index, int maxHP, boolean destructible, boolean unitPassable, boolean projectilePassable) {
             this.index = index;
             this.maxHP = maxHP;
             this.destructible = destructible;
+            this.unitPassable = unitPassable;
+            this.projectilePassable = projectilePassable;
         }
     }
 
@@ -34,7 +39,7 @@ public class Map {
             this.hp = type.maxHP;
         }
 
-        public void damage() { //ударить по стене
+        public void damage() { //получение урона
             if (type.destructible) {
                 hp--;
                 if (hp <= 0) {
@@ -60,7 +65,7 @@ public class Map {
     private Cell cells[][]; //препятствие
 
     public Map(TextureAtlas atlas) {
-        this.wallsTexture = new TextureRegion(atlas.findRegion("walls")).split(CELL_SIZE, CELL_SIZE); //для распила картинки
+        this.wallsTexture = new TextureRegion(atlas.findRegion("obstacles")).split(CELL_SIZE, CELL_SIZE); //для распила картинки
         this.grassTexture = atlas.findRegion("grass40");
         this.cells = new Cell[SIZE_X][SIZE_Y];
 
@@ -71,7 +76,7 @@ public class Map {
                 int cy = (int) j / 4;
                 if (cx % 2 == 0 && cy % 2 == 0) {
                     if (MathUtils.random() < 0.8f) {
-                        cells[i][j].changeType(WallType.HARD);
+                        cells[i][j].changeType(WallType.WATER);
                     } else {
                         cells[i][j].changeType(WallType.SOFT);
                     }
@@ -97,7 +102,7 @@ public class Map {
         int cy = (int) (bullet.getPosition().y / CELL_SIZE);
 
         if (cx >= 0 && cy >= 0 && cx < SIZE_X && cy <= SIZE_Y) { //проверяем что пуля в пределах карты
-            if (cells[cx][cy].type != WallType.NONE) {
+            if (!cells[cx][cy].type.projectilePassable) {
                 cells[cx][cy].damage();
                 bullet.deactivate();
             }
@@ -126,7 +131,7 @@ public class Map {
 
         for (int i = leftX; i <= rightX; i++) {
             for (int j = bottomY; j <= topY; j++) {
-                if (cells[i][j].type != WallType.NONE) { //если есть стенка то фолс и не можем двигаться туда
+                if (!cells[i][j].type.unitPassable) { //если есть стенка то фолс и не можем двигаться туда
                     return false;
                 }
 
