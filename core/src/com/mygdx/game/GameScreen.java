@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.units.BotTank;
 import com.mygdx.game.units.PlayerTank;
 import com.mygdx.game.units.Tank;
+import com.mygdx.game.utils.KeysControl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,9 +76,14 @@ public class GameScreen implements Screen {
         font24 = new BitmapFont(Gdx.files.internal("font24.fnt"));
         cursor = new TextureRegion(atlas.findRegion("cursor"));
         map = new Map(atlas);
+
+
         players = new ArrayList<>();
-        players.add(new PlayerTank(1,this, atlas));
-        players.add(new PlayerTank(2,this, atlas));
+        players.add(new PlayerTank(1,  KeysControl.createStandardControl1(), this, atlas));
+        players.add(new PlayerTank(2, KeysControl.createStandardControl2(), this, atlas));
+
+
+
         bulletEmitter = new BulletEmitter(atlas);
         botEmitter = new BotEmitter(this, atlas);
         gameTimer = 6.0f;

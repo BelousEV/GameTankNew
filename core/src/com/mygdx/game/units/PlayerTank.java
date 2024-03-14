@@ -13,17 +13,21 @@ import com.mygdx.game.GameTanks;
 import com.mygdx.game.ScreenManager;
 import com.mygdx.game.Weapon;
 import com.mygdx.game.utils.Direction;
+import com.mygdx.game.utils.KeysControl;
 import com.mygdx.game.utils.TankOwner;
+import com.mygdx.game.utils.Utils;
 
 public class PlayerTank extends Tank {
+    KeysControl keysControl;
     int index;
     int score;
     int lifes;
 
-    public PlayerTank(int index,GameScreen game, TextureAtlas atlas) {
+    public PlayerTank(int index, KeysControl keysControl, GameScreen game, TextureAtlas atlas) {
         super(game);
         this.index = index;
         this.ownerType = TankOwner.PLAYER; //играет человек
+        this.keysControl = keysControl;
         this.weapon = new Weapon(atlas);
         this.texture = atlas.findRegion("playerTankBase");
         this.textureHp = atlas.findRegion("bar");
@@ -49,14 +53,26 @@ public class PlayerTank extends Tank {
 
     public void update(float dt) {
         checkMovent(dt);
+        if (keysControl.getTargeting() == KeysControl.Targeting.MOUSE) {
+            rotateTurretToPoint(gameScreen.getMousePosition().x, gameScreen.getMousePosition().y, dt);
 
-        ScreenManager.getInstance().getViewport().unproject(tmp);
-
-        rotateTurretToPoint(gameScreen.getMousePosition().x, gameScreen.getMousePosition().y, dt);
-
-        if (Gdx.input.isTouched()) {
-            fire();
+            if (Gdx.input.isTouched()) {
+                fire();
+            }
+        } else {
+            if (Gdx.input.isKeyPressed(keysControl.getRotateTurretLeft())){
+                turretAngle = Utils.makeRotation(turretAngle, turretAngle + 90.0f, 270.f, dt);
+                turretAngle = Utils.angleToFromNegPiToPosPi(turretAngle);
+            }
+            if (Gdx.input.isKeyPressed(keysControl.getRotateTurretRight())){
+                turretAngle = Utils.makeRotation(turretAngle, turretAngle - 90.0f, 270.f, dt);
+                turretAngle = Utils.angleToFromNegPiToPosPi(turretAngle);
+            }
+            if (Gdx.input.isKeyPressed(keysControl.getFire())) {
+                fire();
+            }
         }
+
 
         super.update(dt);
     }
@@ -68,16 +84,16 @@ public class PlayerTank extends Tank {
     }
 
     public void checkMovent(float dt) { //метод отвечает за движения
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+        if (Gdx.input.isKeyPressed(keysControl.getLeft())) {
             move(Direction.LEFT, dt);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+        if (Gdx.input.isKeyPressed(keysControl.getRight())) {
             move(Direction.RIGHT,dt);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+        if (Gdx.input.isKeyPressed(keysControl.getUp())) {
             move(Direction.UP, dt);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+        if (Gdx.input.isKeyPressed(keysControl.getDown())) {
             move(Direction.DOWN, dt);
         }
     }
