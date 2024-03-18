@@ -19,6 +19,7 @@ import com.mygdx.game.utils.Utils;
 
 public class PlayerTank extends Tank {
     KeysControl keysControl;
+    StringBuilder tmpString;
     int index;
     int score;
     int lifes;
@@ -39,6 +40,7 @@ public class PlayerTank extends Tank {
         this.hp = this.hpMax;
         this.circle = new Circle(position.x, position.y, (width + height) / 2);
         this.lifes = 5;
+        this.tmpString = new StringBuilder();
     }
 
     public void addScore (int amount){
@@ -79,7 +81,11 @@ public class PlayerTank extends Tank {
 
 
     public void renderHUD (SpriteBatch batch, BitmapFont font24){
-        font24.draw(batch, "Score: " + score + "\nLifes" + lifes, 20, 700);
+        tmpString.setLength(0);  //стираем все, что там было
+        tmpString.append("Player: ").append(index);
+        tmpString.append("\nScore: ").append(score);
+        tmpString.append("\nLifes: ").append(lifes);
+        font24.draw(batch, tmpString, 20 + (index-1) * 200, 700);
 
     }
 

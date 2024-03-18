@@ -27,10 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class GameScreen implements Screen {
+public class GameScreen extends AbstractScreen {
     private SpriteBatch batch;
 
     private BitmapFont font24; //шрифт
+    private TextureAtlas atlas;
     private Map map;
     private List<PlayerTank> players;
 
@@ -72,7 +73,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() { //когда экран показали
-        TextureAtlas atlas = new TextureAtlas("game.pack");
+        atlas = new TextureAtlas("game.pack");
         font24 = new BitmapFont(Gdx.files.internal("font24.fnt"));
         cursor = new TextureRegion(atlas.findRegion("cursor"));
         map = new Map(atlas);
@@ -112,7 +113,7 @@ public class GameScreen implements Screen {
         exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.exit();
+                ScreenManager.getInstance().setScreen(ScreenManager.ScreenType.MENU);
             }
         });
 
@@ -123,7 +124,7 @@ public class GameScreen implements Screen {
         group.setPosition(1100, 640);
         stage.addActor(group);  //выводим на экран кнопку
         Gdx.input.setInputProcessor(stage);
-        // Gdx.input.setCursorCatched(true); //убираем курсор мыши
+        Gdx.input.setCursorCatched(true); //убираем курсор мыши
     }
 
     @Override
@@ -152,10 +153,14 @@ public class GameScreen implements Screen {
             players.get(i).renderHUD(batch, font24);
         }
 
-        batch.draw(cursor, mousePosition.x - cursor.getRegionWidth() / 2, mousePosition.y - cursor.getRegionHeight() / 2, cursor.getRegionWidth() / 2, cursor.getRegionHeight() / 2, cursor.getRegionWidth(), cursor.getRegionHeight(), 1, 1, worldTimer * 15);
+
 
         batch.end();
         stage.draw();
+        batch.begin();
+        batch.draw(cursor, mousePosition.x - cursor.getRegionWidth() / 2, mousePosition.y - cursor.getRegionHeight() / 2, cursor.getRegionWidth() / 2, cursor.getRegionHeight() / 2, cursor.getRegionWidth(), cursor.getRegionHeight(), 1, 1, worldTimer * 15);
+        batch.end();
+
     }
 
     public void update(float dt) {
@@ -224,28 +229,13 @@ public class GameScreen implements Screen {
         }
     }
 
-    @Override
-    public void resize(int width, int height) { //когда отмасштабировали
-        ScreenManager.getInstance().resize(width, height);
-    }
 
-    @Override
-    public void pause() {
 
-    }
-
-    @Override
-    public void resume() { //развернули экран обратно
-
-    }
-
-    @Override
-    public void hide() { //скрылся
-
-    }
 
     @Override
     public void dispose() {
+        atlas.dispose();
+        font24.dispose();
 
     }
 

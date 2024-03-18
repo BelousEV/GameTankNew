@@ -28,7 +28,7 @@ public class GameTanks extends Game {
     public void create() { //метод отвечает за запуск приложения с начальной подготовкой
         batch = new SpriteBatch();
         ScreenManager.getInstance().init(this, batch);
-        ScreenManager.getInstance().setScreen(ScreenManager.ScreenType.GAME); //переход на экран игры
+        ScreenManager.getInstance().setScreen(ScreenManager.ScreenType.MENU); //переход на экран игры
 
 
     }
