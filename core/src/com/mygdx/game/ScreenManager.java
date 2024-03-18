@@ -29,6 +29,7 @@ public class ScreenManager { //управление экранами
 
     private Game game;
     private GameScreen gameScreen;
+    private MenuScreen menuScreen;
     private Viewport viewport; //масштабирование мира
     private Camera camera;
 
@@ -47,6 +48,7 @@ public class ScreenManager { //управление экранами
         this.camera.update();
         this.viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
         this.gameScreen = new GameScreen(batch);
+        this.menuScreen = new MenuScreen(batch);
     }
 
 
@@ -60,6 +62,9 @@ public class ScreenManager { //управление экранами
     public void setScreen(ScreenType screenType) {
         Screen currentScreen = game.getScreen();  //запомним текущий экран
         switch (screenType) {//смотрим на тип экрана, куда нас просят перейти
+            case MENU:
+                game.setScreen(menuScreen);
+                break;
             case GAME:
                 game.setScreen(gameScreen);
                 break;
