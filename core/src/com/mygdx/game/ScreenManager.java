@@ -1,12 +1,14 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.game.units.GameType;
 
 public class ScreenManager { //управление экранами
 
@@ -59,13 +61,15 @@ public class ScreenManager { //управление экранами
 
 
     }
-    public void setScreen(ScreenType screenType) {
+    public void setScreen(ScreenType screenType, Object ... args) {
+        Gdx.input.setCursorCatched(false);
         Screen currentScreen = game.getScreen();  //запомним текущий экран
         switch (screenType) {//смотрим на тип экрана, куда нас просят перейти
             case MENU:
                 game.setScreen(menuScreen);
                 break;
             case GAME:
+                gameScreen.setGameType((GameType) args [0]);
                 game.setScreen(gameScreen);
                 break;
         }

@@ -19,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.units.BotTank;
+import com.mygdx.game.units.GameType;
 import com.mygdx.game.units.PlayerTank;
 import com.mygdx.game.units.Tank;
 import com.mygdx.game.utils.KeysControl;
@@ -33,6 +34,14 @@ public class GameScreen extends AbstractScreen {
     private BitmapFont font24; //шрифт
     private TextureAtlas atlas;
     private Map map;
+
+    private GameType gameType;
+
+    public void setGameType(GameType gameType) {
+        this.gameType = gameType;
+
+    }
+
     private List<PlayerTank> players;
 
     private BulletEmitter bulletEmitter;
@@ -81,8 +90,9 @@ public class GameScreen extends AbstractScreen {
 
         players = new ArrayList<>();
         players.add(new PlayerTank(1,  KeysControl.createStandardControl1(), this, atlas));
-        players.add(new PlayerTank(2, KeysControl.createStandardControl2(), this, atlas));
-
+        if (gameType == GameType.TWO_PLAYERS) {
+            players.add(new PlayerTank(2, KeysControl.createStandardControl2(), this, atlas));
+        }
 
 
         bulletEmitter = new BulletEmitter(atlas);
