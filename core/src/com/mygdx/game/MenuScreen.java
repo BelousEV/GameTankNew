@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.units.BotTank;
+import com.mygdx.game.units.GameType;
 import com.mygdx.game.units.PlayerTank;
 import com.mygdx.game.units.Tank;
 import com.mygdx.game.utils.KeysControl;
@@ -62,13 +63,13 @@ public class MenuScreen extends AbstractScreen {
         start1Button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                 ScreenManager.getInstance().setScreen(ScreenManager.ScreenType.GAME);
+                 ScreenManager.getInstance().setScreen(ScreenManager.ScreenType.GAME, GameType.ONE_PLAYER);
             }
         });
         start2Button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenManager.getInstance().setScreen(ScreenManager.ScreenType.GAME);
+                ScreenManager.getInstance().setScreen(ScreenManager.ScreenType.GAME, GameType.TWO_PLAYERS);
             }
         });
 
