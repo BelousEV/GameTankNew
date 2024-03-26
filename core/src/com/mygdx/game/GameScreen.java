@@ -108,6 +108,7 @@ public class GameScreen extends AbstractScreen {
         mousePosition = new Vector2();
 
 
+
         //делаем кнопки
         Skin skin = new Skin();
         skin.add("simpleButton", new TextureRegion(atlas.findRegion("SimpleButton")));
