@@ -45,6 +45,7 @@ public class GameScreen extends AbstractScreen {
     private List<PlayerTank> players;
 
     private BulletEmitter bulletEmitter;
+    private ItemsEmitter itemsEmitter;
 
     private BotEmitter botEmitter;
 
@@ -76,6 +77,10 @@ public class GameScreen extends AbstractScreen {
 
     }
 
+    public ItemsEmitter getItemsEmitter() {
+        return itemsEmitter;
+    }
+
     public Vector2 getMousePosition() {
         return mousePosition;
     }
@@ -96,6 +101,7 @@ public class GameScreen extends AbstractScreen {
 
 
         bulletEmitter = new BulletEmitter(atlas);
+        itemsEmitter = new ItemsEmitter(atlas);
         botEmitter = new BotEmitter(this, atlas);
         gameTimer = 6.0f;
         stage = new Stage();
@@ -133,6 +139,7 @@ public class GameScreen extends AbstractScreen {
         group.addActor(exitButton);
         group.setPosition(1100, 640);
         stage.addActor(group);  //выводим на экран кнопку
+        itemsEmitter.generateRandomItem(300,300,5, 0.8f);
         Gdx.input.setInputProcessor(stage);
         Gdx.input.setCursorCatched(true); //убираем курсор мыши
     }
@@ -152,12 +159,15 @@ public class GameScreen extends AbstractScreen {
         batch.begin();
         map.render(batch);
 
+
+
         for (int i = 0; i < players.size(); i++) {
             players.get(i).render(batch);
         }
 
         botEmitter.render(batch);
         bulletEmitter.render(batch);
+        itemsEmitter.render(batch);
 
         for (int i = 0; i < players.size(); i++) {
             players.get(i).renderHUD(batch, font24);
@@ -195,6 +205,7 @@ public class GameScreen extends AbstractScreen {
                 players.get(i).update(dt);
             }
             botEmitter.update(dt);
+            itemsEmitter.update(dt);
             bulletEmitter.update(dt); //bulletEmitter сам посмотри и заапдейть
             checkCollisions();
         }
