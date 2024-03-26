@@ -94,7 +94,7 @@ public class GameScreen extends AbstractScreen {
 
 
         players = new ArrayList<>();
-        players.add(new PlayerTank(1,  KeysControl.createStandardControl1(), this, atlas));
+        players.add(new PlayerTank(1, KeysControl.createStandardControl1(), this, atlas));
         if (gameType == GameType.TWO_PLAYERS) {
             players.add(new PlayerTank(2, KeysControl.createStandardControl2(), this, atlas));
         }
@@ -103,7 +103,7 @@ public class GameScreen extends AbstractScreen {
         bulletEmitter = new BulletEmitter(atlas);
         itemsEmitter = new ItemsEmitter(atlas);
         botEmitter = new BotEmitter(this, atlas);
-        gameTimer = 6.0f;
+        gameTimer = 100.0f;
         stage = new Stage();
         mousePosition = new Vector2();
 
@@ -139,7 +139,7 @@ public class GameScreen extends AbstractScreen {
         group.addActor(exitButton);
         group.setPosition(1100, 640);
         stage.addActor(group);  //выводим на экран кнопку
-        itemsEmitter.generateRandomItem(300,300,5, 0.8f);
+        itemsEmitter.generateRandomItem(300, 300, 5, 0.8f);
         Gdx.input.setInputProcessor(stage);
         Gdx.input.setCursorCatched(true); //убираем курсор мыши
     }
@@ -160,7 +160,6 @@ public class GameScreen extends AbstractScreen {
         map.render(batch);
 
 
-
         for (int i = 0; i < players.size(); i++) {
             players.get(i).render(batch);
         }
@@ -172,7 +171,6 @@ public class GameScreen extends AbstractScreen {
         for (int i = 0; i < players.size(); i++) {
             players.get(i).renderHUD(batch, font24);
         }
-
 
 
         batch.end();
@@ -190,16 +188,19 @@ public class GameScreen extends AbstractScreen {
         worldTimer += dt;
         if (!paused) {
             gameTimer += dt;
-            if (gameTimer > 5.0f) {
+            if (gameTimer > 15.0f) {
                 gameTimer = 0.0f;
 
-                float coordX, coordY; //тобы боты не появлялись в стене
-                do {
-                    coordX = MathUtils.random(0, Gdx.graphics.getWidth());
-                    coordY = MathUtils.random(0, Gdx.graphics.getHeight());
-                } while (!map.isAreaClear(coordX, coordY, 20));
+                for (int i = 0; i < 5; i++) {
+                    float coordX, coordY; //тобы боты не появлялись в стене
+                    do {
+                        coordX = MathUtils.random(0, Gdx.graphics.getWidth());
+                        coordY = MathUtils.random(0, Gdx.graphics.getHeight());
+                    } while (!map.isAreaClear(coordX, coordY, 20));
 
-                botEmitter.activate(coordX, coordY);
+                    botEmitter.activate(coordX, coordY);
+                }
+
             }
             for (int i = 0; i < players.size(); i++) {
                 players.get(i).update(dt);
@@ -240,6 +241,20 @@ public class GameScreen extends AbstractScreen {
                 map.checkWallAndBulletsCollision(bullet); //проверка что пуля влетела в стену
             }
         }
+        for (int i = 0; i < itemsEmitter.getItems().length; i++) {
+            if (itemsEmitter.getItems()[i].isActive()) {
+                Item item = itemsEmitter.getItems()[i];
+                for (int j = 0; j < players.size(); j++) {
+                    if (players.get(j).getCircle().contains(item.getPosition())) {
+                        players.get(j).consumePowerUp(item);
+                        item.deactivate();
+                        break;
+
+                    }
+                }
+            }
+
+        }
     }
 
     public boolean checkBulletAndTank(Tank tank, Bullet bullet) { //настройка дружественного огня
@@ -249,8 +264,6 @@ public class GameScreen extends AbstractScreen {
             return tank != bullet.getOwner(); //танк не должен попадать по любому танку (владелец пули не должен совпадать с танком тогда попадаем
         }
     }
-
-
 
 
     @Override
