@@ -61,6 +61,7 @@ public class BotTank extends Tank {
     } //кнопка активации бота
     @Override
     public void destroy() {
+gameScreen.getItemsEmitter().generateRandomItem(position.x, position.y, 3, 0.5f);
         active = false;
     }
 
