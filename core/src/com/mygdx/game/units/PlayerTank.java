@@ -8,10 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
-import com.mygdx.game.GameScreen;
-import com.mygdx.game.GameTanks;
-import com.mygdx.game.ScreenManager;
-import com.mygdx.game.Weapon;
+import com.mygdx.game.*;
 import com.mygdx.game.utils.Direction;
 import com.mygdx.game.utils.KeysControl;
 import com.mygdx.game.utils.TankOwner;
@@ -43,8 +40,8 @@ public class PlayerTank extends Tank {
         this.tmpString = new StringBuilder();
     }
 
-    public void addScore (int amount){
-        score +=amount;
+    public void addScore(int amount) {
+        score += amount;
     }
 
     @Override
@@ -62,11 +59,11 @@ public class PlayerTank extends Tank {
                 fire();
             }
         } else {
-            if (Gdx.input.isKeyPressed(keysControl.getRotateTurretLeft())){
+            if (Gdx.input.isKeyPressed(keysControl.getRotateTurretLeft())) {
                 turretAngle = Utils.makeRotation(turretAngle, turretAngle + 90.0f, 270.f, dt);
                 turretAngle = Utils.angleToFromNegPiToPosPi(turretAngle);
             }
-            if (Gdx.input.isKeyPressed(keysControl.getRotateTurretRight())){
+            if (Gdx.input.isKeyPressed(keysControl.getRotateTurretRight())) {
                 turretAngle = Utils.makeRotation(turretAngle, turretAngle - 90.0f, 270.f, dt);
                 turretAngle = Utils.angleToFromNegPiToPosPi(turretAngle);
             }
@@ -79,13 +76,27 @@ public class PlayerTank extends Tank {
         super.update(dt);
     }
 
+    public void consumePowerUp(Item item) {
+        switch (item.getType()) {
+            case MEDKIT:
+                hp += 4;
+                if(hp>hpMax){
+                    hp = hpMax;
+                }
+                break;
+            case SHIELD:
+                addScore(1000);
+                break;
+        }
+    }
 
-    public void renderHUD (SpriteBatch batch, BitmapFont font24){
+
+    public void renderHUD(SpriteBatch batch, BitmapFont font24) {
         tmpString.setLength(0);  //стираем все, что там было
         tmpString.append("Player: ").append(index);
         tmpString.append("\nScore: ").append(score);
         tmpString.append("\nLifes: ").append(lifes);
-        font24.draw(batch, tmpString, 20 + (index-1) * 200, 700);
+        font24.draw(batch, tmpString, 20 + (index - 1) * 200, 700);
 
     }
 
@@ -94,7 +105,7 @@ public class PlayerTank extends Tank {
             move(Direction.LEFT, dt);
         }
         if (Gdx.input.isKeyPressed(keysControl.getRight())) {
-            move(Direction.RIGHT,dt);
+            move(Direction.RIGHT, dt);
         }
         if (Gdx.input.isKeyPressed(keysControl.getUp())) {
             move(Direction.UP, dt);
